@@ -1,15 +1,18 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"compress/gzip"
 	"errors"
 	"fmt"
+	"github.com/srgyrn/data-exporter-test/parser"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 const (
@@ -18,7 +21,9 @@ const (
 )
 
 func main() {
-	if _, err := os.Stat("data.zip"); os.IsNotExist(err) {
+	timeStarted := time.Now()
+
+	if _, err := os.Stat("data.tsv"); os.IsNotExist(err) {
 		data := downloadData()
 		extractAndSaveDataFile(data)
 	}
@@ -28,11 +33,18 @@ func main() {
 	if !errors.Is(err, nil) {
 		log.Fatal("Failed to open file")
 		return
+
 	}
 
-	fmt.Print(dataFile)
+	reader := parser.NewParser(bufio.NewReader(dataFile))
+	a := reader.Parse(10)
+
+	fmt.Println("Completed in: " +time.Since(timeStarted).String())
+
+	fmt.Println(a)
 }
 
+// Download data file from imdb
 func downloadData() io.Reader {
 	res, err := http.Get(imdbDataFileUrl)
 	if !errors.Is(err, nil) {
@@ -43,6 +55,7 @@ func downloadData() io.Reader {
 	return res.Body
 }
 
+// File downloaded is a gzip file. It has to be extracted before saving it to the disk
 func extractAndSaveDataFile(r io.Reader) {
 	gr, err := gzip.NewReader(r)
 	if !errors.Is(err, nil) {
@@ -58,3 +71,4 @@ func extractAndSaveDataFile(r io.Reader) {
 		log.Fatal("Failed to write file", err)
 	}
 }
+
