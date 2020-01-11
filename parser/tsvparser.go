@@ -13,6 +13,7 @@ type Parser struct {
 	reader *csv.Reader
 }
 
+// representation of tsv data in code
 type dataModel struct {
 	titleType      string
 	primaryTitle   string
@@ -42,12 +43,12 @@ func (p *Parser) Parse(lineCountToRead int) []dataModel {
 	wg.Add(lineCountToRead)
 
 	for ; ; lineCount++ {
+		// The first line is titles of the fields so skip it
 		if lineCount == 0 {
 			continue
 		}
 
 		record, err := p.reader.Read()
-
 		if errors.Is(err, io.EOF) {
 			break
 		}

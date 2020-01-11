@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	dataFileName = "data.tsv"
+	dataFileName    = "data.tsv"
 	imdbDataFileUrl = "https://datasets.imdbws.com/title.basics.tsv.gz"
 )
 
@@ -39,7 +39,7 @@ func main() {
 	reader := parser.NewParser(bufio.NewReader(dataFile))
 	a := reader.Parse(10)
 
-	fmt.Println("Completed in: " +time.Since(timeStarted).String())
+	fmt.Println("Completed in: " + time.Since(timeStarted).String())
 
 	fmt.Println(a)
 }
@@ -71,4 +71,3 @@ func extractAndSaveDataFile(r io.Reader) {
 		log.Fatal("Failed to write file", err)
 	}
 }
-
